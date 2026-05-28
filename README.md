@@ -77,12 +77,12 @@ chmod +x deploy.sh
 
 After deployment, you'll get a URL like:
 ```
-https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/prod/chat
+https://curebot.s3-website.ap-south-1.amazonaws.com/
 ```
 
 ### Health Check
 ```bash
-curl https://YOUR_API_URL/prod/chat
+https://d27zahuxzik9vs.cloudfront.net/
 ```
 
 ### Chat Examples
