@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CureBot - AI Healthcare Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+        .app {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* === TOP NAV === */
+        .topnav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 100;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .topnav .menu-icon { font-size: 1.4rem; color: #333; cursor: pointer; }
+        .topnav .logo {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 1.2rem; font-weight: 800; color: #1a1a1a;
+        }
+        .topnav .logo i { color: #16a34a; font-size: 1.4rem; }
+        .topnav .notif { font-size: 1.3rem; color: #333; cursor: pointer; position: relative; }
+        .topnav .notif-dot {
+            position: absolute; top: -2px; right: -2px;
+            width: 8px; height: 8px; background: #ef4444;
+            border-radius: 50%; border: 2px solid #fff;
+        }
+        /* === SEARCH BAR === */
+        .search-bar {
+            margin: 12px 20px;
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+        }
+        .search-bar i { color: #9ca3af; font-size: 1.1rem; }
+        .search-bar input {
+            flex: 1; border: none; background: none;
+            font-size: 0.88rem; font-family: inherit;
+            color: #6b7280; outline: none;
+        }
+        .search-bar .mic { color: #9ca3af; font-size: 1.1rem; cursor: pointer; }
+
+        /* === HERO SECTION === */
+        .hero {
+            padding: 24px 20px 20px;
+            display: flex; align-items: center; gap: 16px;
+        }
+        .hero-text { flex: 1; }
+        .hero-text h2 {
+            font-size: 1.6rem; font-weight: 800;
+            color: #111; line-height: 1.2; margin-bottom: 10px;
+        }
+        .hero-text p {
+            font-size: 0.84rem; color: #6b7280; line-height: 1.5;
+        }
+        .hero-img {
+            width: 130px; height: 130px;
+            background: linear-gradient(135deg, #dcfce7, #d1fae5);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+        /* Medical Assistant Avatar */
+        .assistant-avatar {
+            position: relative;
+            width: 80px; height: 90px;
+        }
+        .avatar-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%; transform: translateX(-50%);
+            width: 60px; height: 40px;
+            background: #16a34a;
+            border-radius: 30px 30px 20px 20px;
+        }
+        .avatar-head {
+            position: absolute;
+            top: 0; left: 50%; transform: translateX(-50%);
+            width: 50px; height: 50px;
+            background: #fff;
+            border-radius: 50%;
+            border: 3px solid #16a34a;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .avatar-face {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 4px;
+        }
+        .avatar-eyes {
+            display: flex; gap: 10px;
+        }
+        .avatar-eyes .eye {
+            width: 6px; height: 6px;
+            background: #16a34a;
+            border-radius: 50%;
+            animation: blink-eyes 3s infinite;
+        }
+        @keyframes blink-eyes { 0%,90%,100%{transform:scaleY(1)} 95%{transform:scaleY(0.1)} }
+        .avatar-mouth {
+            width: 14px; height: 7px;
+            border-bottom: 2.5px solid #16a34a;
+            border-radius: 0 0 10px 10px;
+        }
+        .avatar-cross {
+            position: absolute;
+            top: -4px; right: -4px;
+            width: 18px; height: 18px;
+            background: #ef4444;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #fff;
+        }
+        .avatar-pulse {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            border: 2px solid rgba(22,163,74,0.2);
+            animation: avatar-pulse 2s ease-out infinite;
+        }
+        @keyframes avatar-pulse { 0%{transform:translate(-50%,-50%) scale(0.8);opacity:1} 100%{transform:translate(-50%,-50%) scale(1.4);opacity:0} }
+
+        /* === TRUST BADGES === */
+        .trust-row {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 8px; padding: 0 20px 20px;
+        }
+        .trust-item {
+            text-align: center;
+            padding: 10px 4px;
+        }
+        .trust-item i {
+            font-size: 1.2rem; color: #16a34a;
+            display: block; margin-bottom: 4px;
+        }
+        .trust-item span {
+            font-size: 0.68rem; color: #6b7280; font-weight: 500;
+            line-height: 1.3; display: block;
+        }
+        /* === EMERGENCY BANNER === */
+        .emergency-banner {
+            margin: 0 20px 20px;
+            padding: 16px 20px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .emergency-left {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .emergency-left .e-icon {
+            width: 40px; height: 40px;
+            background: #dcfce7;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+        }
+        .emergency-left .e-text h4 {
+            font-size: 0.88rem; font-weight: 700; color: #111;
+        }
+        .emergency-left .e-text p {
+            font-size: 0.75rem; color: #6b7280;
+        }
+        .emergency-btn {
+            padding: 10px 20px;
+            background: #16a34a;
+            color: #fff;
+            border: none; border-radius: 24px;
+            font-size: 0.8rem; font-weight: 700;
+            font-family: inherit; cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
+            transition: background 0.2s;
+        }
+        .emergency-btn:hover { background: #15803d; }
+        .emergency-btn i { font-size: 0.9rem; }
+
+        /* === SECTION TITLE === */
+        .section-title {
+            padding: 0 20px;
+            margin-bottom: 14px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .section-title h3 {
+            font-size: 1rem; font-weight: 700; color: #111;
+        }
+        .section-title a {
+            font-size: 0.78rem; color: #16a34a; font-weight: 600;
+            text-decoration: none;
+        }
+        /* === POPULAR SERVICES === */
+        .services-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 8px; padding: 0 20px 24px;
+        }
+        .service-card {
+            text-align: center;
+            padding: 14px 6px 10px;
+            background: #f9fafb;
+            border: 1px solid #f0f0f0;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .service-card:hover {
+            border-color: #16a34a;
+            background: #f0fdf4;
+            transform: translateY(-2px);
+        }
+        .service-card .s-icon {
+            width: 40px; height: 40px;
+            margin: 0 auto 8px;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; color: #374151;
+        }
+        .service-card:hover .s-icon { border-color: #16a34a; color: #16a34a; }
+        .service-card h4 { font-size: 0.68rem; font-weight: 600; color: #374151; margin-bottom: 2px; }
+        .service-card p { font-size: 0.6rem; color: #9ca3af; line-height: 1.3; }
+
+        /* === SYMPTOMS BANNER === */
+        .symptoms-banner {
+            margin: 0 20px 24px;
+            padding: 18px 20px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 16px;
+            display: flex; align-items: center; gap: 14px;
+        }
+        .symptoms-banner .sym-icon {
+            width: 44px; height: 44px;
+            background: #dcfce7;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: #16a34a;
+            flex-shrink: 0;
+        }
+        .symptoms-banner .sym-text { flex: 1; }
+        .symptoms-banner .sym-text h4 {
+            font-size: 0.88rem; font-weight: 700; color: #111;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .symptoms-banner .sym-text h4 .new-badge {
+            font-size: 0.6rem; background: #dcfce7; color: #16a34a;
+            padding: 2px 8px; border-radius: 10px; font-weight: 700;
+        }
+        .symptoms-banner .sym-text p {
+            font-size: 0.75rem; color: #6b7280; margin-top: 2px;
+        }
+        .symptoms-btn {
+            padding: 10px 18px;
+            background: #16a34a; color: #fff;
+            border: none; border-radius: 20px;
+            font-size: 0.78rem; font-weight: 700;
+            font-family: inherit; cursor: pointer;
+            white-space: nowrap;
+        }
+        .symptoms-btn:hover { background: #15803d; }
+        /* === SPECIALTIES === */
+        .specialties-row {
+            display: flex; gap: 16px;
+            padding: 0 20px 24px;
+            overflow-x: auto;
+        }
+        .specialties-row::-webkit-scrollbar { display: none; }
+        .spec-item {
+            text-align: center;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .spec-item .spec-icon {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            margin: 0 auto 6px;
+            border: 2px solid #f0f0f0;
+            transition: all 0.2s;
+        }
+        .spec-item:hover .spec-icon { border-color: #16a34a; transform: scale(1.05); }
+        .spec-item span { font-size: 0.65rem; color: #6b7280; font-weight: 500; }
+        .spec-cardio .spec-icon { background: #fef2f2; color: #ef4444; }
+        .spec-derma .spec-icon { background: #fdf2f8; color: #ec4899; }
+        .spec-ent .spec-icon { background: #f0fdf4; color: #16a34a; }
+        .spec-pedia .spec-icon { background: #eff6ff; color: #3b82f6; }
+        .spec-gynae .spec-icon { background: #faf5ff; color: #a855f7; }
+        .spec-ortho .spec-icon { background: #f0fdfa; color: #14b8a6; }
+
+        /* === TOP HOSPITALS === */
+        .hospitals-scroll {
+            display: flex; gap: 14px;
+            padding: 0 20px 24px;
+            overflow-x: auto;
+        }
+        .hospitals-scroll::-webkit-scrollbar { display: none; }
+        .hospital-card {
+            flex-shrink: 0;
+            width: 180px;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .hospital-card:hover {
+            border-color: #16a34a;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .hospital-card .h-img {
+            height: 100px;
+            background: linear-gradient(135deg, #e0f2fe, #d1fae5);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .hospital-card .h-img img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+        .hospital-card .h-img .h-placeholder {
+            font-size: 2.2rem;
+            opacity: 0.8;
+        }
+        .hospital-card .h-info { padding: 10px 12px; }
+        .hospital-card .h-info h4 {
+            font-size: 0.76rem; font-weight: 700; color: #111;
+            margin-bottom: 4px; line-height: 1.3;
+        }
+        .hospital-card .h-info .h-meta {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.65rem; color: #6b7280; margin-bottom: 6px;
+        }
+        .hospital-card .h-info .h-meta i { color: #f59e0b; font-size: 0.7rem; }
+        .hospital-card .h-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #f0fdf4;
+            color: #16a34a;
+            border-radius: 6px;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+        /* === CHATBOT SECTION === */
+        .chatbot-section {
+            margin: 0 20px 20px;
+            background: #f9fafb;
+            border: 1px solid #e8e8e8;
+            border-radius: 20px;
+            padding: 20px;
+        }
+        .chatbot-header {
+            display: flex; align-items: flex-start; gap: 12px;
+            margin-bottom: 14px;
+        }
+        .chatbot-header .cb-avatar {
+            width: 42px; height: 42px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .cb-avatar-inner {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: #fff;
+        }
+        .cb-status {
+            position: absolute; bottom: 0; right: 0;
+            width: 12px; height: 12px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 2px solid #f9fafb;
+        }
+        .chatbot-header .cb-text h4 {
+            font-size: 0.9rem; font-weight: 700; color: #111;
+        }
+        .chatbot-header .cb-text p {
+            font-size: 0.78rem; color: #6b7280; margin-top: 2px;
+        }
+        .chatbot-features {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 6px 16px;
+            margin-bottom: 14px;
+        }
+        .chatbot-features .feat {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.75rem; color: #374151;
+        }
+        .chatbot-features .feat i { color: #16a34a; font-size: 0.8rem; }
+        .chatbot-question {
+            font-size: 0.84rem; font-weight: 600; color: #111;
+            margin-bottom: 12px;
+        }
+        .chatbot-input {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .chatbot-input input {
+            flex: 1; padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 0.84rem;
+            font-family: inherit;
+            outline: none; background: #fff;
+        }
+        .chatbot-input input:focus { border-color: #16a34a; }
+        .chatbot-input .attach {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: #6b7280; font-size: 1rem;
+        }
+        .chatbot-input .send-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: #16a34a;
+            border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: #fff; font-size: 1.1rem;
+            transition: background 0.2s;
+        }
+        .chatbot-input .send-btn:hover { background: #15803d; }
+        /* === AI MEDICAL ASSISTANT SECTION === */
+        .med-assistant-section {
+            margin: 0 20px 24px;
+            padding: 20px;
+            background: #fff;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .med-assist-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .med-assist-avatar {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: #fff;
+            position: relative;
+        }
+        .med-assist-avatar .online-dot {
+            position: absolute; bottom: -2px; right: -2px;
+            width: 12px; height: 12px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+        .med-assist-header h4 { font-size: 0.92rem; font-weight: 700; color: #111; }
+        .online-text {
+            font-size: 0.72rem; color: #16a34a; font-weight: 500;
+            display: flex; align-items: center; gap: 4px; margin-top: 2px;
+        }
+        .pulse-dot {
+            width: 6px; height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+        .med-assist-capabilities {
+            display: flex; flex-direction: column; gap: 12px;
+            margin-bottom: 16px;
+        }
+        .capability {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 12px 14px;
+            background: #f9fafb;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .capability:hover {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+        .capability i {
+            font-size: 1.2rem; color: #16a34a;
+            margin-top: 2px; flex-shrink: 0;
+        }
+        .capability h5 { font-size: 0.8rem; font-weight: 600; color: #111; margin-bottom: 2px; }
+        .capability p { font-size: 0.7rem; color: #6b7280; line-height: 1.4; }
+        .med-assist-quick-asks { }
+        .quick-ask-label { font-size: 0.72rem; color: #6b7280; font-weight: 600; margin-bottom: 8px; }
+        .quick-ask-chips {
+            display: flex; flex-wrap: wrap; gap: 8px;
+        }
+        .chip {
+            padding: 7px 12px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #16a34a;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .chip:hover {
+            background: #16a34a;
+            color: #fff;
+            border-color: #16a34a;
+        }
+
+        /* === FOOTER DISCLAIMER === */
+        .footer-disc {
+            text-align: center;
+            padding: 12px 20px 24px;
+            font-size: 0.68rem;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+        .footer-disc i { color: #16a34a; margin-right: 4px; }
+
+        /* === DYNAMIC CHAT MESSAGES === */
+        .chat-messages {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            margin: 0 20px 20px;
+            padding: 20px;
+            background: #f9fafb;
+            border: 1px solid #e8e8e8;
+            border-radius: 20px;
+        }
+        .chat-messages.active { display: flex; }
+        .dynamic-msg {
+            display: flex; gap: 10px;
+            animation: msgIn 0.3s ease;
+        }
+        @keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .dynamic-msg.user { flex-direction: row-reverse; }
+        .dynamic-msg .dm-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; flex-shrink: 0;
+        }
+        .dynamic-msg.bot .dm-avatar { background: #dcfce7; }
+        .dynamic-msg.user .dm-avatar { background: #eff6ff; }
+        .dynamic-msg .dm-body {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.84rem;
+            line-height: 1.6;
+            max-width: 80%;
+        }
+        .dynamic-msg.bot .dm-body {
+            background: #fff; border: 1px solid #e8e8e8;
+            border-top-left-radius: 4px; color: #334155;
+        }
+        .dynamic-msg.user .dm-body {
+            background: #16a34a; color: #fff;
+            border-top-right-radius: 4px;
+        }
+        .dm-body strong { font-weight: 600; }
+        .typing-dots { display: flex; gap: 4px; padding: 12px 16px; }
+        .typing-dots span {
+            width: 7px; height: 7px; background: #9ca3af;
+            border-radius: 50%; animation: dotJump 1.4s infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes dotJump { 0%,60%,100%{transform:translateY(0);opacity:0.3} 30%{transform:translateY(-5px);opacity:1} }
+        .booking-card {
+            margin-top: 8px; padding: 10px 14px;
+            background: #ecfdf5; border: 1px solid #a7f3d0;
+            border-radius: 10px; font-size: 0.78rem;
+        }
+        .booking-card .booking-id { font-weight: 700; color: #059669; }
+
+        /* Feedback buttons */
+        .msg-feedback {
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 10px; padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .fb-label { font-size: 0.68rem; color: #9ca3af; }
+        .fb-btn {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            border: 1px solid #e8e8e8;
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.8rem; color: #6b7280;
+            transition: all 0.2s;
+        }
+        .fb-btn.fb-yes:hover { background: #f0fdf4; border-color: #16a34a; color: #16a34a; }
+        .fb-btn.fb-no:hover { background: #fef2f2; border-color: #ef4444; color: #ef4444; }
+        .fb-thanks { font-size: 0.7rem; color: #16a34a; font-weight: 500; }
+
+        /* Config */
+        .config-banner {
+            display: none; align-items: center; gap: 10px;
+            margin: 0 20px 16px; padding: 12px 16px;
+            background: #fffbeb; border: 1px solid #fde68a;
+            border-radius: 12px; font-size: 0.82rem;
+        }
+        .config-banner input {
+            flex: 1; padding: 8px 12px;
+            border: 1px solid #fde68a; border-radius: 8px;
+            font-size: 0.82rem; font-family: inherit;
+        }
+        .config-banner button {
+            padding: 8px 14px; background: #f59e0b; color: #fff;
+            border: none; border-radius: 8px; cursor: pointer;
+            font-weight: 600; font-size: 0.78rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Top Nav -->
+        <div class="topnav">
+            <i class="ri-menu-line menu-icon"></i>
+            <div class="logo"><i class="ri-heart-pulse-fill"></i> CureBot</div>
+            <div class="notif">
+                <i class="ri-notification-3-line"></i>
+                <span class="notif-dot"></span>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <i class="ri-search-line"></i>
+            <input type="text" placeholder="Search doctor, specialty, hospital, lab or symptoms...">
+            <i class="ri-mic-line mic"></i>
+        </div>
+
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-text">
+                <h2>Your AI Healthcare Assistant</h2>
+                <p>Book appointments, find specialists, locate hospitals & labs, and get medical guidance 24/7.</p>
+            </div>
+            <div class="hero-img">
+                <div class="assistant-avatar">
+                    <div class="avatar-body"></div>
+                    <div class="avatar-head">
+                        <div class="avatar-face">
+                            <div class="avatar-eyes">
+                                <span class="eye"></span>
+                                <span class="eye"></span>
+                            </div>
+                            <div class="avatar-mouth"></div>
+                        </div>
+                        <div class="avatar-cross">+</div>
+                    </div>
+                    <div class="avatar-pulse"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="trust-row">
+            <div class="trust-item">
+                <i class="ri-verified-badge-line"></i>
+                <span>Verified Hospitals</span>
+            </div>
+            <div class="trust-item">
+                <i class="ri-user-star-line"></i>
+                <span>Licensed Doctors</span>
+            </div>
+            <div class="trust-item">
+                <i class="ri-shield-check-line"></i>
+                <span>Secure & Private</span>
+            </div>
+            <div class="trust-item">
+                <i class="ri-customer-service-2-line"></i>
+                <span>24/7 Support</span>
+            </div>
+        </div>
+
+        <!-- Emergency Banner -->
+        <div class="emergency-banner">
+            <div class="emergency-left">
+                <div class="e-icon">🚑</div>
+                <div class="e-text">
+                    <h4>Emergency?</h4>
+                    <p>Call 1122 Now</p>
+                </div>
+            </div>
+            <button class="emergency-btn" onclick="sendQuick('emergency')">
+                <i class="ri-phone-line"></i> Call 1122
+            </button>
+        </div>
+        <!-- Popular Services -->
+        <div class="section-title"><h3>Popular Services</h3></div>
+        <div class="services-grid">
+            <div class="service-card" onclick="sendQuick('book appointment')">
+                <div class="s-icon"><i class="ri-calendar-check-line"></i></div>
+                <h4>Book Appointment</h4>
+                <p>Find & book doctor visits</p>
+            </div>
+            <div class="service-card" onclick="sendQuick('book lab test')">
+                <div class="s-icon"><i class="ri-flask-line"></i></div>
+                <h4>Book Lab Test</h4>
+                <p>Find & book lab tests</p>
+            </div>
+            <div class="service-card" onclick="sendQuick('find doctor')">
+                <div class="s-icon"><i class="ri-user-heart-line"></i></div>
+                <h4>Find Doctor</h4>
+                <p>Search by specialty</p>
+            </div>
+            <div class="service-card" onclick="sendQuick('hospitals')">
+                <div class="s-icon"><i class="ri-hospital-line"></i></div>
+                <h4>Find Hospitals</h4>
+                <p>View nearby hospitals</p>
+            </div>
+            <div class="service-card" onclick="sendQuick('labs')">
+                <div class="s-icon"><i class="ri-microscope-line"></i></div>
+                <h4>Find Labs</h4>
+                <p>View nearby labs</p>
+            </div>
+        </div>
+
+        <!-- Check Symptoms Banner -->
+        <div class="symptoms-banner">
+            <div class="sym-icon"><i class="ri-stethoscope-line"></i></div>
+            <div class="sym-text">
+                <h4>Check Symptoms <span class="new-badge">New</span></h4>
+                <p>Describe your symptoms and get AI-powered insights.</p>
+            </div>
+            <button class="symptoms-btn" onclick="sendQuick('symptoms')">Start Now</button>
+        </div>
+
+        <!-- AI Medical Assistant Section -->
+        <div class="med-assistant-section">
+            <div class="med-assist-header">
+                <div class="med-assist-avatar">
+                    <i class="ri-robot-2-line"></i>
+                    <span class="online-dot"></span>
+                </div>
+                <div>
+                    <h4>AI Medical Assistant</h4>
+                    <p class="online-text"><span class="pulse-dot"></span> Online &bull; Ready to help</p>
+                </div>
+            </div>
+            <div class="med-assist-capabilities">
+                <div class="capability" onclick="sendQuick('I have a health question')">
+                    <i class="ri-question-answer-line"></i>
+                    <div>
+                        <h5>Ask Health Questions</h5>
+                        <p>Get instant answers about symptoms, medications, and conditions</p>
+                    </div>
+                </div>
+                <div class="capability" onclick="sendQuick('symptoms')">
+                    <i class="ri-mental-health-line"></i>
+                    <div>
+                        <h5>Symptom Analysis</h5>
+                        <p>Describe how you feel and get possible causes</p>
+                    </div>
+                </div>
+                <div class="capability" onclick="sendQuick('medicine information')">
+                    <i class="ri-medicine-bottle-line"></i>
+                    <div>
+                        <h5>Medicine Information</h5>
+                        <p>Learn about dosage, side effects, and interactions</p>
+                    </div>
+                </div>
+                <div class="capability" onclick="sendQuick('first aid guidance')">
+                    <i class="ri-first-aid-kit-line"></i>
+                    <div>
+                        <h5>First Aid Guidance</h5>
+                        <p>Step-by-step emergency first aid instructions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="med-assist-quick-asks">
+                <p class="quick-ask-label">Quick questions:</p>
+                <div class="quick-ask-chips">
+                    <span class="chip" onclick="sendQuick('What causes headaches?')">What causes headaches?</span>
+                    <span class="chip" onclick="sendQuick('How to reduce fever?')">How to reduce fever?</span>
+                    <span class="chip" onclick="sendQuick('Signs of dehydration')">Signs of dehydration</span>
+                    <span class="chip" onclick="sendQuick('When to see a doctor')">When to see a doctor?</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Specialties -->
+        <div class="section-title"><h3>Popular Specialties</h3><a href="#" onclick="sendQuick('find doctor');return false;">View all</a></div>
+        <div class="specialties-row">
+            <div class="spec-item spec-cardio" onclick="sendQuick('find cardiologist')">
+                <div class="spec-icon"><i class="ri-heart-pulse-line"></i></div>
+                <span>Cardiologist</span>
+            </div>
+            <div class="spec-item spec-derma" onclick="sendQuick('find dermatologist')">
+                <div class="spec-icon"><i class="ri-drop-line"></i></div>
+                <span>Dermatologist</span>
+            </div>
+            <div class="spec-item spec-ent" onclick="sendQuick('find ENT')">
+                <div class="spec-icon"><i class="ri-ear-line"></i></div>
+                <span>ENT</span>
+            </div>
+            <div class="spec-item spec-pedia" onclick="sendQuick('find pediatrician')">
+                <div class="spec-icon"><i class="ri-parent-line"></i></div>
+                <span>Pediatrician</span>
+            </div>
+            <div class="spec-item spec-gynae" onclick="sendQuick('find gynecologist')">
+                <div class="spec-icon"><i class="ri-women-line"></i></div>
+                <span>Gynecologist</span>
+            </div>
+            <div class="spec-item spec-ortho" onclick="sendQuick('find orthopedic')">
+                <div class="spec-icon"><i class="ri-walk-line"></i></div>
+                <span>Orthopedic</span>
+            </div>
+        </div>
+        <!-- Top Hospitals -->
+        <div class="section-title"><h3>Top Hospitals in Lahore</h3><a href="#" onclick="sendQuick('hospitals');return false;">View all</a></div>
+        <div class="hospitals-scroll">
+            <div class="hospital-card" onclick="sendQuick('hospitals')">
+                <div class="h-img">
+                    <img src="images/mayo-hospital.jpg" alt="Mayo Hospital Lahore">
+                </div>
+                <div class="h-info">
+                    <h4>Mayo Hospital</h4>
+                    <div class="h-meta"><i class="ri-star-fill"></i> 4.5 (1.8k) &bull; Anarkali</div>
+                    <span class="h-tag">Government</span>
+                </div>
+            </div>
+            <div class="hospital-card" onclick="sendQuick('hospitals')">
+                <div class="h-img">
+                    <img src="images/hospital-1.jpg" alt="Shaukat Khanum Hospital">
+                </div>
+                <div class="h-info">
+                    <h4>Shaukat Khanum Hospital</h4>
+                    <div class="h-meta"><i class="ri-star-fill"></i> 4.7 (982) &bull; Johar Town</div>
+                    <span class="h-tag">Cancer Care</span>
+                </div>
+            </div>
+            <div class="hospital-card" onclick="sendQuick('hospitals')">
+                <div class="h-img">
+                    <img src="images/hospital-2.jpg" alt="Lahore General Hospital">
+                </div>
+                <div class="h-info">
+                    <h4>Lahore General Hospital</h4>
+                    <div class="h-meta"><i class="ri-star-fill"></i> 4.1 (756) &bull; Ferozepur Rd</div>
+                    <span class="h-tag">Government</span>
+                </div>
+            </div>
+            <div class="hospital-card" onclick="sendQuick('hospitals')">
+                <div class="h-img">
+                    <img src="images/hospital-3.jpg" alt="Doctors Hospital Lahore">
+                </div>
+                <div class="h-info">
+                    <h4>Doctors Hospital</h4>
+                    <div class="h-meta"><i class="ri-star-fill"></i> 4.4 (1.2k) &bull; Johar Town</div>
+                    <span class="h-tag">Private</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chatbot Section -->
+        <div class="chatbot-section">
+            <div class="chatbot-header">
+                <div class="cb-avatar">
+                    <div class="cb-avatar-inner">
+                        <i class="ri-robot-2-line"></i>
+                    </div>
+                    <span class="cb-status"></span>
+                </div>
+                <div class="cb-text">
+                    <h4>Hi, I'm CureBot 👋</h4>
+                    <p>Your personal AI health assistant. I can help you with:</p>
+                </div>
+            </div>
+            <div class="chatbot-features">
+                <div class="feat"><i class="ri-checkbox-circle-fill"></i> Find doctors & specialists</div>
+                <div class="feat"><i class="ri-checkbox-circle-fill"></i> Answer health questions</div>
+                <div class="feat"><i class="ri-checkbox-circle-fill"></i> Book appointments</div>
+                <div class="feat"><i class="ri-checkbox-circle-fill"></i> Check symptoms</div>
+                <div class="feat"><i class="ri-checkbox-circle-fill"></i> Locate hospitals & labs</div>
+                <div class="feat"><i class="ri-checkbox-circle-fill"></i> Medicine information</div>
+                <div class="feat"><i class="ri-checkbox-circle-fill"></i> First aid guidance</div>
+                <div class="feat"><i class="ri-checkbox-circle-fill"></i> And much more!</div>
+            </div>
+            <div class="chatbot-question">What would you like help with today?</div>
+            <div class="chatbot-input">
+                <input type="text" id="messageInput" placeholder="Type your message or ask anything..." onkeypress="if(event.key==='Enter')sendMessage()">
+                <div class="attach"><i class="ri-attachment-2"></i></div>
+                <button class="send-btn" onclick="sendMessage()"><i class="ri-send-plane-fill"></i></button>
+            </div>
+        </div>
+
+        <!-- Dynamic Chat Messages -->
+        <div class="chat-messages" id="chatContainer"></div>
+
+        <!-- Config -->
+        <div class="config-banner" id="configBanner">
+            <span>⚙️</span>
+            <input type="text" id="apiUrlInput" placeholder="Paste API URL">
+            <button onclick="saveApiUrl()">Save</button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-disc">
+            <i class="ri-shield-check-line"></i>
+            CureBot is not a replacement for professional medical advice.<br>
+            In an emergency, call 1122 immediately.
+        </div>
+    </div>
+    <script>
+        const DEFAULT_URL = 'https://5lnlbc6yd3dantsw5ejjd73moa0otbiy.lambda-url.ap-south-1.on.aws/';
+        let API_URL = DEFAULT_URL;
+        localStorage.removeItem('curebot_api_url');
+        if (!API_URL) document.getElementById('configBanner').style.display = 'flex';
+
+        function saveApiUrl() {
+            const url = document.getElementById('apiUrlInput').value.trim();
+            if (url) {
+                API_URL = url;
+                localStorage.setItem('curebot_api_url', url);
+                document.getElementById('configBanner').style.display = 'none';
+                addMessage('bot', '✅ API connected!');
+            }
+        }
+
+        function sendQuick(text) {
+            document.getElementById('messageInput').value = text;
+            sendMessage();
+        }
+
+        let chatContext = {};
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message) return;
+            if (!API_URL) { addMessage('bot', '⚠️ Please set your API URL first.'); return; }
+            addMessage('user', message);
+            input.value = '';
+            const typingEl = showTyping();
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 15000);
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, context: chatContext }),
+                    signal: controller.signal,
+                });
+                clearTimeout(timeout);
+                const data = await res.json();
+                removeTyping(typingEl);
+                if (data.context !== undefined) chatContext = data.context;
+                if (data.reply) addMessage('bot', data.reply, data.booking);
+                else if (data.error) addMessage('bot', '❌ ' + data.error);
+                else addMessage('bot', JSON.stringify(data));
+            } catch (err) {
+                removeTyping(typingEl);
+                if (err.name === 'AbortError') addMessage('bot', '⏱️ Request timed out.');
+                else addMessage('bot', '❌ Connection error: ' + err.message);
+            }
+        }
+
+        function addMessage(type, text, booking) {
+            const container = document.getElementById('chatContainer');
+            container.classList.add('active');
+            const avatar = type === 'bot' ? '🤖' : '👤';
+            let bHtml = '';
+            if (booking) bHtml = '<div class="booking-card"><span class="booking-id">📋 ' + booking.id + '</span> | ' + booking.type + ' | ' + booking.status + '</div>';
+            // Add feedback buttons for bot messages
+            let feedbackHtml = '';
+            if (type === 'bot') {
+                feedbackHtml = '<div class="msg-feedback"><span class="fb-label">Was this helpful?</span><button class="fb-btn fb-yes" onclick="sendFeedback(true, this)"><i class="ri-thumb-up-line"></i></button><button class="fb-btn fb-no" onclick="sendFeedback(false, this)"><i class="ri-thumb-down-line"></i></button></div>';
+            }
+            const el = document.createElement('div');
+            el.className = 'dynamic-msg ' + type;
+            el.innerHTML = '<div class="dm-avatar">' + avatar + '</div><div class="dm-body">' + escapeHtml(text) + bHtml + feedbackHtml + '</div>';
+            container.appendChild(el);
+            el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        function sendFeedback(wasHelpful, btn) {
+            // Disable buttons after click
+            const parent = btn.parentElement;
+            parent.innerHTML = wasHelpful ? '<span class="fb-thanks">👍 Thanks!</span>' : '<span class="fb-thanks">🙏 I\'ll improve!</span>';
+            // Send feedback to backend for learning
+            fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: '__feedback:' + (wasHelpful ? 'yes' : 'no'), context: chatContext })
+            }).catch(() => {});
+        }
+
+        function showTyping() {
+            const c = document.getElementById('chatContainer');
+            c.classList.add('active');
+            const el = document.createElement('div');
+            el.className = 'dynamic-msg bot';
+            el.innerHTML = '<div class="dm-avatar">🤖</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+            c.appendChild(el);
+            el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            return el;
+        }
+
+        function removeTyping(el) { if (el && el.parentNode) el.parentNode.removeChild(el); }
+
+        function escapeHtml(t) {
+            return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                .replace(/\n/g,'<br>')
+                .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+                .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g,'<a href="$2" target="_blank" style="color:#16a34a;text-decoration:underline;">$1</a>');
+        }
+    </script>
+</body>
+</html>
