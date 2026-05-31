@@ -168,6 +168,9 @@ User feedback (👍/👎) → Store correction → Match future similar queries
 
 CureBot is **not a replacement for professional medical advice**. It provides general health information only. Always consult a qualified healthcare provider for diagnosis and treatment. In emergencies, call **1122** immediately.
 
+## AUTHOR
+Areebah Moeed Abbasi
+
 ---
 
 ## 📄 License
