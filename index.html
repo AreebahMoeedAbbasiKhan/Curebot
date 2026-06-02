@@ -7,17 +7,86 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
     <style>
+        /* === DESIGN TOKENS === */
+        :root {
+            --primary: #16a34a;
+            --primary-light: #dcfce7;
+            --primary-dark: #15803d;
+            --primary-gradient: linear-gradient(135deg, #16a34a, #22c55e);
+            --accent: #0ea5e9;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --bg: #f9fafb;
+            --surface: #ffffff;
+            --border: #e5e7eb;
+            --border-light: #f0f0f0;
+            --text: #111827;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
+            --shadow-glow: 0 0 20px rgba(22,163,74,0.15);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(22,163,74,0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes blink { 50% { opacity: 0.4; } }
+        @keyframes blink-eyes { 0%,90%,100%{transform:scaleY(1)} 95%{transform:scaleY(0.1)} }
+        @keyframes avatar-pulse { 0%{transform:translate(-50%,-50%) scale(0.8);opacity:1} 100%{transform:translate(-50%,-50%) scale(1.4);opacity:0} }
+        @keyframes dotJump { 0%,60%,100%{transform:translateY(0);opacity:0.3} 30%{transform:translateY(-5px);opacity:1} }
+        @keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+        .animate-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+        }
+        .animate-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === BASE === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: #f5f5f5;
-            color: #1a1a1a;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
         .app {
             max-width: 480px;
             margin: 0 auto;
-            background: #fff;
+            background: var(--surface);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -31,38 +100,48 @@
             padding: 16px 20px;
             position: sticky;
             top: 0;
-            background: #fff;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 100;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--border-light);
         }
-        .topnav .menu-icon { font-size: 1.4rem; color: #333; cursor: pointer; }
+        .topnav .menu-icon { font-size: 1.4rem; color: #333; cursor: pointer; transition: transform var(--duration-fast); }
+        .topnav .menu-icon:active { transform: scale(0.9); }
         .topnav .logo {
             display: flex; align-items: center; gap: 8px;
-            font-size: 1.2rem; font-weight: 800; color: #1a1a1a;
+            font-size: 1.2rem; font-weight: 800; color: var(--text);
         }
-        .topnav .logo i { color: #16a34a; font-size: 1.4rem; }
+        .topnav .logo i { color: var(--primary); font-size: 1.4rem; }
         .topnav .notif { font-size: 1.3rem; color: #333; cursor: pointer; position: relative; }
         .topnav .notif-dot {
             position: absolute; top: -2px; right: -2px;
-            width: 8px; height: 8px; background: #ef4444;
+            width: 8px; height: 8px; background: var(--danger);
             border-radius: 50%; border: 2px solid #fff;
+            animation: pulse-glow 2s infinite;
         }
         /* === SEARCH BAR === */
         .search-bar {
             margin: 12px 20px;
             display: flex; align-items: center; gap: 10px;
             padding: 12px 16px;
-            background: #f8f9fa;
-            border: 1px solid #e8e8e8;
-            border-radius: 12px;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            transition: border-color var(--duration-normal), box-shadow var(--duration-normal);
         }
-        .search-bar i { color: #9ca3af; font-size: 1.1rem; }
+        .search-bar:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(22,163,74,0.08);
+        }
+        .search-bar i { color: var(--text-muted); font-size: 1.1rem; }
         .search-bar input {
             flex: 1; border: none; background: none;
             font-size: 0.88rem; font-family: inherit;
-            color: #6b7280; outline: none;
+            color: var(--text-secondary); outline: none;
         }
-        .search-bar .mic { color: #9ca3af; font-size: 1.1rem; cursor: pointer; }
+        .search-bar .mic { color: var(--text-muted); font-size: 1.1rem; cursor: pointer; transition: color var(--duration-fast); }
+        .search-bar .mic:hover { color: var(--primary); }
 
         /* === HERO SECTION === */
         .hero {
@@ -193,15 +272,17 @@
         }
         .emergency-btn {
             padding: 10px 20px;
-            background: #16a34a;
+            background: var(--primary-gradient);
             color: #fff;
             border: none; border-radius: 24px;
             font-size: 0.8rem; font-weight: 700;
             font-family: inherit; cursor: pointer;
             display: flex; align-items: center; gap: 6px;
-            transition: background 0.2s;
+            transition: all var(--duration-normal);
+            box-shadow: 0 2px 8px rgba(22,163,74,0.25);
         }
-        .emergency-btn:hover { background: #15803d; }
+        .emergency-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.35); }
+        .emergency-btn:active { transform: scale(0.96); }
         .emergency-btn i { font-size: 0.9rem; }
 
         /* === SECTION TITLE === */
@@ -223,31 +304,34 @@
             gap: 8px; padding: 0 20px 24px;
         }
         .service-card {
-            text-align: center;
-            padding: 14px 6px 10px;
-            background: #f9fafb;
-            border: 1px solid #f0f0f0;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
+            text-align: center; padding: 14px 6px 10px;
+            background: var(--surface); border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-lg); cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-out);
+            touch-action: manipulation;
+            min-height: 44px;
         }
         .service-card:hover {
-            border-color: #16a34a;
-            background: #f0fdf4;
-            transform: translateY(-2px);
+            border-color: var(--primary);
+            background: var(--primary-light);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
         }
+        .service-card:active { transform: translateY(-1px) scale(0.97); }
         .service-card .s-icon {
-            width: 40px; height: 40px;
-            margin: 0 auto 8px;
-            background: #fff;
-            border: 1px solid #e8e8e8;
-            border-radius: 12px;
+            width: 40px; height: 40px; margin: 0 auto 8px;
+            border-radius: var(--radius-md);
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem; color: #374151;
+            font-size: 1.1rem; transition: transform var(--duration-fast);
         }
-        .service-card:hover .s-icon { border-color: #16a34a; color: #16a34a; }
-        .service-card h4 { font-size: 0.68rem; font-weight: 600; color: #374151; margin-bottom: 2px; }
-        .service-card p { font-size: 0.6rem; color: #9ca3af; line-height: 1.3; }
+        .service-card:hover .s-icon { transform: scale(1.1); }
+        .service-card:nth-child(1) .s-icon { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #2563eb; }
+        .service-card:nth-child(2) .s-icon { background: linear-gradient(135deg, #fae8ff, #e9d5ff); color: #9333ea; }
+        .service-card:nth-child(3) .s-icon { background: linear-gradient(135deg, #ffedd5, #fed7aa); color: #ea580c; }
+        .service-card:nth-child(4) .s-icon { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
+        .service-card:nth-child(5) .s-icon { background: linear-gradient(135deg, #ccfbf1, #99f6e4); color: #0d9488; }
+        .service-card h4 { font-size: 0.68rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+        .service-card p { font-size: 0.6rem; color: var(--text-muted); line-height: 1.3; }
 
         /* === SYMPTOMS BANNER === */
         .symptoms-banner {
@@ -379,6 +463,10 @@
             border: 1px solid #e8e8e8;
             border-radius: 20px;
             padding: 20px;
+            position: sticky;
+            bottom: 0;
+            z-index: 50;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
         }
         .chatbot-header {
             display: flex; align-items: flex-start; gap: 12px;
@@ -446,13 +534,15 @@
         .chatbot-input .send-btn {
             width: 40px; height: 40px;
             border-radius: 50%;
-            background: #16a34a;
+            background: var(--primary-gradient);
             border: none;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; color: #fff; font-size: 1.1rem;
-            transition: background 0.2s;
+            transition: all var(--duration-normal);
+            box-shadow: 0 2px 8px rgba(22,163,74,0.3);
         }
-        .chatbot-input .send-btn:hover { background: #15803d; }
+        .chatbot-input .send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(22,163,74,0.4); }
+        .chatbot-input .send-btn:active { transform: scale(0.95); }
         /* === AI MEDICAL ASSISTANT SECTION === */
         .med-assistant-section {
             margin: 0 20px 24px;
@@ -559,6 +649,9 @@
             background: #f9fafb;
             border: 1px solid #e8e8e8;
             border-radius: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            overscroll-behavior-y: contain;
         }
         .chat-messages.active { display: flex; }
         .dynamic-msg {
@@ -689,7 +782,7 @@
         </div>
 
         <!-- Trust Badges -->
-        <div class="trust-row">
+        <div class="trust-row animate-in">
             <div class="trust-item">
                 <i class="ri-verified-badge-line"></i>
                 <span>Verified Hospitals</span>
@@ -709,7 +802,7 @@
         </div>
 
         <!-- Emergency Banner -->
-        <div class="emergency-banner">
+        <div class="emergency-banner animate-in">
             <div class="emergency-left">
                 <div class="e-icon">🚑</div>
                 <div class="e-text">
@@ -723,7 +816,7 @@
         </div>
         <!-- Popular Services -->
         <div class="section-title"><h3>Popular Services</h3></div>
-        <div class="services-grid">
+        <div class="services-grid animate-in">
             <div class="service-card" onclick="sendQuick('book appointment')">
                 <div class="s-icon"><i class="ri-calendar-check-line"></i></div>
                 <h4>Book Appointment</h4>
@@ -752,7 +845,7 @@
         </div>
 
         <!-- Check Symptoms Banner -->
-        <div class="symptoms-banner">
+        <div class="symptoms-banner animate-in">
             <div class="sym-icon"><i class="ri-stethoscope-line"></i></div>
             <div class="sym-text">
                 <h4>Check Symptoms <span class="new-badge">New</span></h4>
@@ -816,7 +909,7 @@
 
         <!-- Popular Specialties -->
         <div class="section-title"><h3>Popular Specialties</h3><a href="#" onclick="sendQuick('find doctor');return false;">View all</a></div>
-        <div class="specialties-row">
+        <div class="specialties-row animate-in">
             <div class="spec-item spec-cardio" onclick="sendQuick('find cardiologist')">
                 <div class="spec-icon"><i class="ri-heart-pulse-line"></i></div>
                 <span>Cardiologist</span>
@@ -844,7 +937,7 @@
         </div>
         <!-- Top Hospitals -->
         <div class="section-title"><h3>Top Hospitals in Lahore</h3><a href="#" onclick="sendQuick('hospitals');return false;">View all</a></div>
-        <div class="hospitals-scroll">
+        <div class="hospitals-scroll animate-in">
             <div class="hospital-card" onclick="sendQuick('hospitals')">
                 <div class="h-img">
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCK9g4Ljfx3N_FK_VNeZ6FQEy3TYX-UbjwBg&s" alt="Mayo Hospital Lahore">
@@ -887,8 +980,11 @@
             </div>
         </div>
 
-        <!-- Chatbot Section -->
-        <div class="chatbot-section">
+        <!-- Dynamic Chat Messages (appears above chatbot input) -->
+        <div class="chat-messages" id="chatContainer"></div>
+
+        <!-- Chatbot Section (sticky at bottom) -->
+        <div class="chatbot-section animate-in">
             <div class="chatbot-header">
                 <div class="cb-avatar">
                     <div class="cb-avatar-inner">
@@ -918,9 +1014,6 @@
                 <button class="send-btn" onclick="sendMessage()"><i class="ri-send-plane-fill"></i></button>
             </div>
         </div>
-
-        <!-- Dynamic Chat Messages -->
-        <div class="chat-messages" id="chatContainer"></div>
 
         <!-- Config -->
         <div class="config-banner" id="configBanner">
@@ -1039,6 +1132,20 @@
                 .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
                 .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g,'<a href="$2" target="_blank" style="color:#16a34a;text-decoration:underline;">$1</a>');
         }
+
+        // === SCROLL ENTRANCE ANIMATIONS ===
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 80);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
